@@ -45,16 +45,16 @@ The intended MaLSTM computation is:
 
 ```mermaid
 flowchart TD
-    A[Sentence A] --> T[Tokenization, padding and Word2Vec lookup]
-    B[Sentence B] --> T2[Tokenization, padding and Word2Vec lookup]
-    T --> E1[Shared LSTM encoder]
-    T2 --> E2[Same shared LSTM encoder]
-    E1 --> H1[Final hidden state hA: 50 dimensions]
-    E2 --> H2[Final hidden state hB: 50 dimensions]
-    H1 --> D[Manhattan / L1 distance]
+    A["Sentence A"] --> T["Tokenization, padding and Word2Vec lookup"]
+    B["Sentence B"] --> T2["Tokenization, padding and Word2Vec lookup"]
+    T --> E1["Shared LSTM encoder"]
+    T2 --> E2["Same shared LSTM encoder"]
+    E1 --> H1["Final hidden state hA: 50 dimensions"]
+    E2 --> H2["Final hidden state hB: 50 dimensions"]
+    H1 --> D["Manhattan / L1 distance"]
     H2 --> D
-    D --> S[Similarity exp(-L1)]
-    S --> L[MSE loss against labels scaled to 0-1]
+    D --> S["Similarity exp(-L1)"]
+    S --> L["MSE loss against labels scaled to 0-1"]
 ```
 
 **Parameter sharing:** both sentence branches call one encoder module. The current implementation uses an explicit LSTM cell rather than `torch.nn.LSTM`, making the gate ordering, parameter layout, masking, and state updates visible in the code.
