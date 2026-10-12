@@ -6,8 +6,6 @@
 
 A Python 3.10/PyTorch reproduction project for **“Siamese Recurrent Architectures for Learning Sentence Similarity”** by Jonas Mueller and Aditya Thyagarajan (AAAI 2016). The goal is to preserve the paper's MaLSTM sentence-similarity computation while replacing the original Theano execution framework with PyTorch.
 
-> **Reproduction status: partial, with measurable differences from the paper.** The current implementation runs the STS → SICK pipeline and reports raw and calibrated evaluation metrics, but it does not yet reproduce the paper's published scores. Important differences—including forget-gate initialization and gradient clipping—remain unresolved. This repository should not be described as an exact reproduction.
-
 ## Table of contents
 
 - [Research background](#research-background)
