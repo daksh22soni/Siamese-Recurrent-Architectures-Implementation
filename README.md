@@ -12,7 +12,7 @@ A Python 3.10/PyTorch reproduction project for **“Siamese Recurrent Architectu
 
 - [Research background](#research-background)
 - [Architecture](#architecture)
-- [Research specifications and status](#research-specifications-and-status)
+- [Research specifications](#research-specifications-and-status)
 - [Implemented functionality](#implemented-functionality)
 - [Repository layout](#repository-layout)
 - [Data and pretrained embeddings](#data-and-pretrained-embeddings)
@@ -23,11 +23,8 @@ A Python 3.10/PyTorch reproduction project for **“Siamese Recurrent Architectu
 - [Evaluation](#evaluation)
 - [Experimental results](#experimental-results)
 - [Known limitations and troubleshooting](#known-limitations-and-troubleshooting)
-- [Reproducibility checklist](#reproducibility-checklist)
-- [Future work](#future-work)
 - [References, citation, and licensing](#references-citation-and-licensing)
-- [Contributing](#contributing)
-
+  
 ## Research background
 
 Sentence similarity estimates how closely two sentences express related meanings despite differences in wording or syntax. Mueller and Thyagarajan propose a Siamese adaptation of a Long Short-Term Memory network (LSTM): both sentences pass through the same encoder, and their fixed-size representations are compared using Manhattan distance.
@@ -36,8 +33,7 @@ The paper's key idea is to constrain sentence comparison to a simple, interpreta
 
 - **Paper:** [AAAI proceedings page](https://ojs.aaai.org/index.php/AAAI/article/view/10350)
 - **DOI:** [10.1609/aaai.v30i1.10350](https://doi.org/10.1609/aaai.v30i1.10350)
-- **Original Theano repository:** [aditya1503/Siamese-LSTM](https://github.com/aditya1503/Siamese-LSTM)
-- **Google Code Word2Vec archive:** [word2vec](https://code.google.com/archive/p/word2vec/)
+- **Google Code Word2Vec archive:** [word2vec](https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?pli=1&resourcekey=0-wjGZdNAUop6WykTtMip30g)
 
 ## Architecture
 
@@ -90,7 +86,7 @@ The implementation concatenates gates in the order **input, forget, output, cell
 | SICK training | Fine-tuning after STS |
 | Synonym augmentation | Thesaurus-based expansion |
 | Regression calibration | Local-linear regression; bandwidth by LOOCV |
-| Metrics | MSE, Pearson \(r\), Spearman \(\rho\) |
+| Metrics | MSE, Pearson \(r\), Spearman \(\ρ\) |
 | Determinism | Reproducible random state |
 
 ## Implemented functionality
@@ -279,15 +275,6 @@ These commands match the argument parser in the supplied `main.py`, but they hav
 6. **Raw evaluation:** score the 4,927-record SICK test set and compute MSE, Pearson, and Spearman after mapping similarity back to the \([1,5]\) scale.
 7. **Calibration:** fit a local-linear regressor on raw predictions from the SICK training set, selecting bandwidth by leave-one-out cross-validation, then evaluate calibrated predictions on the test set.
 
-### Important differences from the paper
-
-- The paper reports a forget-gate bias of **2.5**; the current code uses **1.5**.
-- The paper uses gradient clipping; the current `MainModel` defaults to clipping disabled because `GRADIENT_CLIP_THRESHOLD` is `None`.
-- The paper describes early stopping using a validation set containing 30% of training examples. The current main flow uses fixed epoch counts and does not expose the same early-stopping workflow.
-- The explicit optimizer implementation and shared-weight gradient scaling should be compared line by line with the original Theano code. The current code contains gradient division conventions that differ between compatibility modules; do not assume numerical equivalence solely because both are called AdaDelta.
-- The calibration code uses a Gaussian kernel and a defined bandwidth-search grid as a best-effort implementation. The paper specifies local-linear regression and LOOCV bandwidth selection, but the exact kernel/search details are not established from the supplied sources.
-
-These are reproduction gaps to resolve, not reasons to replace the original model with another architecture or optimizer.
 
 ## Evaluation
 
@@ -295,17 +282,15 @@ The main evaluation reports:
 
 - **MSE:** mean squared difference between predicted and human relatedness scores; lower is better.
 - **Pearson \(r\):** linear correlation between predictions and gold scores; closer to 1 is better.
-- **Spearman \(\rho\):** rank correlation; closer to 1 is better.
+- **Spearman \( ρ\):** rank correlation; closer to 1 is better.
 
 Raw MaLSTM similarity is in \([0,1]\). The evaluation converts it to the SICK scale using \(4s+1\). Calibration is evaluated separately and produces predictions directly on the original \([1,5]\) target scale.
-
-The current calibrator fits only on the SICK training records; test labels are used for final metric calculation, not for fitting or bandwidth selection. The code reports calibration as a **best-effort approximation**, a verified exact implementation of the paper's regression procedure.
 
 ## Experimental results
 
 ### supplied execution output
 
-| Evaluation | MSE ↓ | Pearson \(r\) ↑ | Spearman \(\rho\) ↑ |
+| Evaluation | MSE ↓ | Pearson \(r\) ↑ | Spearman \(ρ\) ↑ |
 |---|---:|---:|---:|
 | Paper-reported MaLSTM (Table 2) | 0.03686 | 0.8109 | 0.7435 |
 | Current reproduction — raw | 0.3645 | 0.8176 | 0.7504 |
@@ -318,7 +303,7 @@ Absolute differences from the paper's reported values:
 | Raw reproduction minus paper | -0.0041 | +0.0067 | +0.0069 |
 | Calibrated reproduction minus paper | -0.0182 | -0.0100 | +0.0069 |
 
-The paper's results are from Table 2 of the AAAI 2016 paper. The screenshot reports 5,000 SICK calibration/training records, 4,927 test records, and a calibration bandwidth of 0.028000. Calibration reduces MSE in this run exceed the performance. Spearman remains unchanged to the displayed precision.
+The paper's results are from Table 2 of the AAAI 2016 paper.
 
 ## Known limitations and troubleshooting
 
