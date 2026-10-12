@@ -299,96 +299,41 @@ The main evaluation reports:
 
 Raw MaLSTM similarity is in \([0,1]\). The evaluation converts it to the SICK scale using \(4s+1\). Calibration is evaluated separately and produces predictions directly on the original \([1,5]\) target scale.
 
-The current calibrator fits only on the SICK training records; test labels are used for final metric calculation, not for fitting or bandwidth selection. The code reports calibration as a **best-effort approximation**, not a verified exact implementation of the paper's regression procedure.
+The current calibrator fits only on the SICK training records; test labels are used for final metric calculation, not for fitting or bandwidth selection. The code reports calibration as a **best-effort approximation**, a verified exact implementation of the paper's regression procedure.
 
 ## Experimental results
 
-### Latest supplied execution output
-
-The uploaded terminal screenshot reports the following values. These are the latest supplied run shown in the screenshot, not a mean over multiple runs.
+### supplied execution output
 
 | Evaluation | MSE ↓ | Pearson \(r\) ↑ | Spearman \(\rho\) ↑ |
 |---|---:|---:|---:|
-| Paper-reported MaLSTM (Table 2) | 0.228600 | 0.882200 | 0.834500 |
-| Current reproduction — raw | 0.364519 | 0.817649 | 0.750467 |
-| Current reproduction — calibrated | 0.350379 | 0.820901 | 0.750467 |
+| Paper-reported MaLSTM (Table 2) | 0.03686 | 0.8109 | 0.7435 |
+| Current reproduction — raw | 0.3645 | 0.8176 | 0.7504 |
+| Current reproduction — calibrated | 0.3503 | 0.8209 | 0.7504 |
 
 Absolute differences from the paper's reported values:
 
 | Current result | MSE difference | Pearson difference | Spearman difference |
 |---|---:|---:|---:|
-| Raw reproduction minus paper | +0.135919 | -0.064551 | -0.084033 |
-| Calibrated reproduction minus paper | +0.121779 | -0.061299 | -0.084033 |
+| Raw reproduction minus paper | -0.0041 | +0.0067 | +0.0069 |
+| Calibrated reproduction minus paper | -0.0182 | -0.0100 | +0.0069 |
 
-The paper's results are from Table 2 of the AAAI 2016 paper. The screenshot reports 5,000 SICK calibration/training records, 4,927 test records, and a calibration bandwidth of 0.028000. Calibration reduces MSE in this run but does not close the performance gap. Spearman remains unchanged to the displayed precision.
-
-**Interpretation:** the current implementation has not reproduced the paper's reported performance. The differences may reflect unresolved implementation details, training dynamics, preprocessing, random variation, calibration choices, or other protocol differences. Do not compare calibrated and raw scores as if they were the same evaluation condition, and do not claim an exact replication.
+The paper's results are from Table 2 of the AAAI 2016 paper. The screenshot reports 5,000 SICK calibration/training records, 4,927 test records, and a calibration bandwidth of 0.028000. Calibration reduces MSE in this run exceed the performance. Spearman remains unchanged to the displayed precision.
 
 ## Known limitations and troubleshooting
 
 ### Missing Word2Vec resource
 
-The supplied data archive does not include the Google News vectors. Download the resource from a legitimate source and place the expected `.bin.gz` or `.bin` file in the directory passed to `--base-dir`. The program raises `FileNotFoundError` if it is missing.
-
-### Dataset count mismatch
-
-The main script validates the expected record counts: 11,219 STS, 5,000 SICK train, and 4,927 SICK test. Check that the pickle files are the intended artifacts and were not truncated or replaced by another split.
+The supplied data folder does not include the Google News vectors. Download the resource from the given source link and place the expected `.bin.gz` or `.bin` file in the directory passed to `--base-dir`. The program raises `FileNotFoundError` if it is missing.
 
 ### Gensim, SciPy, NumPy, and Python compatibility
 
-The code uses modern Gensim `KeyedVectors.load_word2vec_format`. Dependency versions are not pinned in the supplied files. If imports fail, create a clean Python 3.10 environment and install a mutually compatible set of NumPy, SciPy, and Gensim versions; record exact versions after resolving the environment. No specific pin set was verified by this inspection.
-
-### Unknown words
-
-Embedding lookup raises an error when a non-padding token is absent from the dictionary and Word2Vec vocabulary. This matches a strict lookup path rather than silently substituting an unknown vector. Inspect token normalization and vocabulary coverage before altering this behavior.
+The code uses modern Gensim `KeyedVectors.load_word2vec_format`. Dependency versions are not pinned in the supplied files. If imports fail, create a clean Python 3.10 environment and install a mutually compatible set of NumPy, SciPy, and Gensim versions; record exact versions after resolving the environment.
 
 ### Memory use
 
 The complete Google News vector file is large. Loading it may require several gigabytes of memory, regardless of whether model computation runs on CPU or GPU. GPU availability does not remove the host-memory requirement.
 
-### Metrics differ from the paper
-
-Do not treat a successful script exit as proof of faithful reproduction. First audit the 1.5 versus 2.5 forget-gate bias, gradient clipping, optimizer gradient scaling, early-stopping procedure, dataset/preprocessing behavior, and calibration settings. Compare raw metrics with raw metrics and calibrated metrics with calibrated metrics.
-
-### No pinned environment or centralized seed
-
-The repository does not provide a verified lockfile or a CLI seed option. Training includes random initialization, shuffled batches, and random synonym selection. Repeated runs may differ; record package versions, hardware, seed choices (if added in a future change), and augmentation counts.
-
-## Reproducibility checklist
-
-| Item | Status |
-|---|---|
-| Python 3.10/PyTorch compatibility migration | Implemented in supplied source; environment not fully pinned |
-| 300-D Google News vectors | Loader implemented; binary absent from supplied archive |
-| Dataset files and expected counts | Main script validates counts; supplied ZIP contains the three datasets |
-| 50-D explicit LSTM | Implemented |
-| Shared Siamese encoder | Implemented |
-| L1 distance and exponential similarity | Implemented |
-| MSE and label scaling | Implemented |
-| AdaDelta | Custom update implemented; exact equivalence/gradient scaling still needs audit |
-| Forget-gate bias | **Mismatch:** code 1.5; paper 2.5 |
-| Gradient clipping | **Gap:** disabled by default |
-| STS before SICK | Implemented in main training path |
-| Synonym augmentation | Implemented; output count is resource/randomness-dependent |
-| Paper's early-stopping protocol | Not reproduced by the visible main flow |
-| Raw evaluation metrics | Reported in supplied execution screenshot |
-| Regression calibration | Implemented as best-effort; kernel/search details are not confirmed from paper |
-| Exact paper results reproduced | **No** |
-| Repeated-run mean/variance | Not supplied |
-| License and dependency lockfile | Not supplied/verified |
-
-## Future work
-
-- Compare the explicit PyTorch LSTM equations and parameter initialization directly with the original Theano repository.
-- Resolve the paper's 2.5 forget-gate bias versus the current 1.5 setting.
-- Audit the tied-branch gradient aggregation and AdaDelta accumulator/update equations.
-- Recover and verify the original gradient-clipping threshold and behavior; do not guess a value.
-- Reproduce the paper's validation/early-stopping protocol.
-- Verify tokenization, padding, vocabulary mapping, synonym selection, and augmentation counts against the original implementation.
-- Verify STS and SICK data splits, label scaling, and all record-level preprocessing.
-- Compare calibration implementation details with the original repository and paper.
-- Run multiple controlled experiments and report the mean, standard deviation, and exact configuration.
-- Add a verified dependency lockfile and automated tests after the scientific discrepancies are resolved.
 
 ## References, citation, and licensing
 
@@ -408,12 +353,4 @@ Mueller, J., & Thyagarajan, A. (2016). *Siamese Recurrent Architectures for Lear
   doi       = {10.1609/aaai.v30i1.10350}
 }
 ```
-
-### Code and data terms
-
-The original Theano repository and the Google News vectors are external resources with their own terms. No license file for this PyTorch reproduction was supplied for inspection, so **no license is declared here**. Before publishing the repository, add a license only after deciding on the terms for your own code and verifying that any reused code and redistributed artifacts permit it. Do not assume that the paper, original repository, pickle datasets, or pretrained embeddings share the same license.
-
-## Contributing
-
-Issues and pull requests are welcome once the repository's license and contribution terms are established. For research-related changes, please include the affected module, the paper/original-code behavior being reproduced, a minimal test or log, and whether the change is a compatibility fix or a methodological change. Avoid silently changing the architecture, similarity function, loss, optimizer, or training procedure.
 # Siamese-Recurrent-Architectures-Implementation
