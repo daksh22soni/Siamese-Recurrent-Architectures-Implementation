@@ -57,15 +57,15 @@ flowchart TD
 
 The sentence similarity function is
 
-\[
-s(a,b)=\exp\left(-\sum_{i=1}^{50}|h_i(a)-h_i(b)|\right),
-\]
+$$
+s(a,b)=\exp\left(-\sum_{i=1}^{50}\left|h_i(a)-h_i(b)\right|\right)
+$$
 
 where \(h(a)\) and \(h(b)\) are the final 50-dimensional hidden states. The resulting raw score lies approximately in \([0,1]\). During training, human relatedness labels on the SICK \([1,5]\) scale are rescaled to \([0,1]\), and MSE is minimized.
 
 ### Explicit LSTM computation
 
-The implementation concatenates gates in the order **input, forget, output, cell candidate**. For each timestep, it computes the affine preactivation \(z_t = W x_t + U h_{t-1} + b\), then applies sigmoid to the input, forget, and output gates and tanh to the cell candidate. The cell and hidden states are updated with the standard gated LSTM equations; a mask keeps the previous states unchanged at padding positions. The final representation is the hidden state at the last padded timestep, with masking intended to preserve the last valid state.
+The implementation concatenates gates in the order **input, forget, output, cell candidate**. For each timestep, it computes the affine preactivation $z_t = W x_t + U h_{t-1} + b$, then applies sigmoid to the input, forget, and output gates and tanh to the cell candidate. The cell and hidden states are updated with the standard gated LSTM equations; a mask keeps the previous states unchanged at padding positions. The final representation is the hidden state at the last padded timestep, with masking intended to preserve the last valid state.
 
 **Initialization discrepancy:** the current `lstm.py` sets the forget-gate bias to **1.5**, while the paper explicitly reports **2.5**. This is a documented unresolved methodological discrepancy, not a Python compatibility detail.
 
