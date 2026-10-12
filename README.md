@@ -73,27 +73,25 @@ The implementation concatenates gates in the order **input, forget, output, cell
 
 **Initialization discrepancy:** the current `lstm.py` sets the forget-gate bias to **1.5**, while the paper explicitly reports **2.5**. This is a documented unresolved methodological discrepancy, not a Python compatibility detail.
 
-## Research specifications and status
+## Research specifications
 
-| Specification | Intended/paper setup | Current code status |
+| Specification | Intended/paper setup
 |---|---|---|
-| Word vectors | 300-D Google News Word2Vec | Implemented; external file required |
-| Sentence encoder | Single-layer LSTM | Explicit PyTorch implementation present |
-| Sentence representation | Final 50-D hidden state | Implemented |
-| Siamese branches | Shared parameters | Implemented with one encoder instance |
-| Distance | Manhattan / L1 | Implemented |
-| Similarity | \(\exp(-L1)\) | Implemented, with numerical clamping |
-| Loss | MSE on labels rescaled to \([0,1]\) | Implemented |
-| Optimizer | AdaDelta | Custom AdaDelta-style update implemented; gradient normalization requires audit |
-| Gradient clipping | Required by paper | **Not active by default** (`GRADIENT_CLIP_THRESHOLD = None`) |
-| Forget-gate bias | 2.5 in the paper | **Discrepancy:** code initializes to 1.5 |
-| STS pretraining | Before SICK training | Entry point runs 66 STS epochs |
-| SICK training | Fine-tuning after STS | Entry point runs 375 epochs with augmentation or 330 without |
-| Synonym augmentation | Thesaurus-based expansion | Implemented; generated count depends on supplied resources |
-| Early stopping | Paper describes a 30% validation set | Fixed epoch counts are used; paper's early-stopping procedure is not reproduced in the visible entry point |
-| Regression calibration | Local-linear regression; bandwidth by LOOCV | Implemented as a best-effort approximation; kernel/search details are not fully specified by the paper |
-| Metrics | MSE, Pearson \(r\), Spearman \(\rho\) | Implemented |
-| Determinism | Reproducible random state | No central seed-setting option is exposed by the CLI |
+| Word vectors | 300-D Google News Word2Vec |
+| Sentence encoder | Single-layer LSTM |
+| Sentence representation | Final 50-D hidden state |
+| Siamese branches | Shared parameters |
+| Distance | Manhattan / L1 |
+| Similarity | \(\exp(-L1)\) |
+| Loss | MSE on labels rescaled to \([0,1]\) |
+| Optimizer | AdaDelta |
+| Forget-gate bias | 1.5 |
+| STS pretraining | Before SICK training |
+| SICK training | Fine-tuning after STS |
+| Synonym augmentation | Thesaurus-based expansion |
+| Regression calibration | Local-linear regression; bandwidth by LOOCV |
+| Metrics | MSE, Pearson \(r\), Spearman \(\rho\) |
+| Determinism | Reproducible random state |
 
 ## Implemented functionality
 
