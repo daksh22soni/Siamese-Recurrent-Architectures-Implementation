@@ -132,7 +132,7 @@ project/
     └── word_vectors.py
 ```
 
-This tree is based on the supplied project layout and uploaded source files, not on a full Git checkout. Filenames may differ in the working directory; verify the actual casing and paths before running commands. No `requirements.txt`, license file, CI workflow, or project-specific GitHub URL was supplied for inspection.
+This tree is based on the supplied project layout and uploaded source files, not on a full Git checkout. Filenames may differ in the working directory; verify the actual casing and paths before running commands.
 
 | Module/artifact | Responsibility |
 |---|---|
