@@ -160,22 +160,24 @@ The uploaded `data.zip` contains `semtrain.p`, `semtest.p`, `stsallrmf.p`, `syns
 
 The main entry point expects the following files inside the directory passed to `--base-dir`:
 
-| File | Use | Included in supplied `data.zip`? |
+| File | Use |
 |---|---|---:|
-| `stsallrmf.p` | STS pretraining dataset; expected 11,219 records | Yes |
-| `semtrain.p` | SICK training dataset; expected 5,000 records | Yes |
-| `semtest.p` | SICK test dataset; expected 4,927 records | Yes |
-| `synsem.p` | Synonym dictionary for augmentation | Yes |
-| `dwords.p` | Token/word lookup mapping | Yes |
-| `bestsem.p` | Legacy checkpoint for evaluation-only mode | Yes |
-| `GoogleNews-vectors-negative300.bin.gz` or `.bin` | 300-dimensional pretrained embeddings | **No** |
-| `kaggle.p` | Not required by the main entry point shown | Yes |
+| `stsallrmf.p` | STS pretraining dataset; with 11,219 records |
+| `semtrain.p` | SICK training dataset; with 5,000 records |
+| `semtest.p` | SICK test dataset; with 4,927 records |
+| `synsem.p` | Synonym dictionary for augmentation |
+| `dwords.p` | Token/word lookup mapping |
+| `bestsem.p` | Legacy checkpoint for evaluation-only mode |
+| `GoogleNews-vectors-negative300.bin.gz` or `.bin` | 300-dimensional pretrained embeddings |
+| `kaggle.p` | Not required by the main entry point shown |
 
 The `.p` files are legacy Python pickle artifacts. Only load pickle files from sources you trust; unpickling untrusted files can execute arbitrary code. The code includes compatibility handling for legacy Python 2-era pickles.
 
 ### Google News Word2Vec
 
-Obtain the original pretrained resource from a legitimate source that permits your intended use. The original Word2Vec archive is linked above. The expected filename is `GoogleNews-vectors-negative300.bin.gz` (or the uncompressed `.bin` file). The main script searches for either filename in `--base-dir` and requires 300-dimensional vectors. The full resource is large and may require substantial RAM to load.
+Obtained the original pretrained resource from a legitimate source that permits intended use. The original Word2Vec archive is linked above. The expected filename is `GoogleNews-vectors-negative300.bin.gz` (or the uncompressed `.bin` file). The main script searches for either filename in `--base-dir` and requires 300-dimensional vectors. The full resource is large and may require substantial RAM to load.
+
+Link to download:- https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?pli=1&resourcekey=0-wjGZdNAUop6WykTtMip30g
 
 Do not commit the multi-gigabyte embedding file or other data artifacts to GitHub unless you have verified their redistribution terms. Consider documenting the expected local path and keeping the file outside version control.
 
