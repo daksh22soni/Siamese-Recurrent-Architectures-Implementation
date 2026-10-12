@@ -71,8 +71,8 @@ The implementation concatenates gates in the order **input, forget, output, cell
 
 ## Research specifications
 
-| Specification | Intended/paper setup
-|---|---|---|
+| Specification | Intended/paper setup |
+|---|---|
 | Word vectors | 300-D Google News Word2Vec |
 | Sentence encoder | Single-layer LSTM |
 | Sentence representation | Final 50-D hidden state |
